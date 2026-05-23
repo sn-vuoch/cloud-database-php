@@ -1,19 +1,26 @@
 <?php
 
 // Database information
-
-$host = "localhost";
-$username = "devuser";
-$password = "aK47iSvery$$$";
+$host = "my-sql-server-testing.mysql.database.azure.com";
+$username = "AzureMySQL";
+$password = "adminIsMyPassW@rd123";
 $database = "mysql";
 
-// Connect to database
-$conn = mysqli_connect($host, $username, $password, $database);
+// Setting SSL
+$conn = mysqli_init();
 
-// Check connection
-if (!$conn) {
+mysqli_ssl_set($conn, NULL, NULL, "/etc/ssl/certs/ca-certificates.crt", NULL, NULL);
+
+// Connect to database
+if (!mysqli_real_connect($conn, $host, $username, $password, $database, 3306, NULL, MYSQLI_CLIENT_SSL)) {
   die("Connection failed: " . mysqli_connect_error());
 }
+
+// Create new database
+mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS cloud_store");
+
+// Switch to new database
+mysqli_select_db($conn, "cloud_store");
 
 // Create products table if not exists
 $sql = "CREATE TABLE IF NOT EXISTS products (
